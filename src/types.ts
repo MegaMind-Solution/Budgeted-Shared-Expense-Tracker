@@ -42,6 +42,22 @@ export interface Expense {
   date: Timestamp;
   createdAt: Timestamp;
   splitType: SplitType;
+  groupId?: string;
+  notes?: string;
+  receiptUrl?: string;
+  participants?: string[];
+  recurringId?: string;
+}
+
+export interface Settlement {
+  id: string;
+  groupId: string;
+  fromUserId: string;
+  toUserId: string;
+  amount: number;
+  status: 'pending' | 'paid';
+  createdAt: Timestamp;
+  paidAt?: Timestamp;
 }
 
 export const CATEGORIES = [

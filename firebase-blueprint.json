@@ -58,6 +58,38 @@
         "email": { "type": "string" }
       },
       "required": ["uid", "role"]
+    },
+    "Settlement": {
+      "title": "Settlement",
+      "description": "Debt settlement record between members",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "groupId": { "type": "string" },
+        "fromUserId": { "type": "string" },
+        "toUserId": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "paid"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["groupId", "fromUserId", "toUserId", "amount", "status"]
+    },
+    "RecurringRule": {
+      "title": "Recurring Rule",
+      "description": "Rule for recurring expenses",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "groupId": { "type": "string" },
+        "amount": { "type": "number" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "paidBy": { "type": "string" },
+        "frequency": { "type": "string", "enum": ["daily", "weekly", "monthly", "yearly"] },
+        "startDate": { "type": "string" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["groupId", "amount", "description", "category", "paidBy", "frequency", "startDate"]
     }
   },
   "firestore": {
@@ -76,6 +108,14 @@
     "/groups/{groupId}/members/{userId}": {
       "schema": "GroupMember",
       "description": "Members of a group"
+    },
+    "/groups/{groupId}/settlements/{settlementId}": {
+      "schema": "Settlement",
+      "description": "Settlements in a group"
+    },
+    "/groups/{groupId}/recurring/{ruleId}": {
+      "schema": "RecurringRule",
+      "description": "Recurring rules in a group"
     }
   }
 }

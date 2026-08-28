@@ -214,3 +214,57 @@ export function saveLocalMembers(groupId: string, members: GroupMember[]): void 
     joinedAt: serializeTimestamp(m.joinedAt),
   }))));
 }
+
+export function duplicateLocalExpense(groupId: string, expenseId: string): Expense | null {
+  const expenses = getLocalExpenses(groupId);
+  const target = expenses.find(e => e.id === expenseId);
+  if (!target) return null;
+
+  return saveLocalExpense(groupId, {
+    amount: target.amount,
+    description: `${target.description} (Copy)`,
+    category: target.category,
+    paidBy: target.paidBy,
+    date: Timestamp.now(),
+    splitType: target.splitType,
+  });
+}
+
+export function restoreLocalExpense(groupId: string, expense: Expense): void {
+  const expenses = getLocalExpenses(groupId);
+  if (expenses.some(e => e.id === expense.id)) return;
+  expenses.push(expense);
+  localStorage.setItem(`${EXPENSES_PREFIX}${groupId}`, JSON.stringify(expenses.map(e => ({
+    ...e,
+    date: serializeTimestamp(e.date),
+    createdAt: serializeTimestamp(e.createdAt),
+  }))));
+  triggerLocalUpdate();
+}
+
+const SETTLEMENTS_PREFIX = 'budgeted_local_settlements_';
+
+export function getLocalSettlements(groupId: string): any[] {
+  const data = localStorage.getItem(`${SETTLEMENTS_PREFIX}${groupId}`);
+  if (!data) return [];
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    return [];
+  }
+}
+
+export function saveLocalSettlement(groupId: string, settlement: any): void {
+  const settlements = getLocalSettlements(groupId);
+  settlements.push(settlement);
+  localStorage.setItem(`${SETTLEMENTS_PREFIX}${groupId}`, JSON.stringify(settlements));
+  triggerLocalUpdate();
+}
+
+export function updateLocalSettlementStatus(groupId: string, settlementId: string, status: 'paid' | 'pending'): void {
+  const settlements = getLocalSettlements(groupId);
+  const updated = settlements.map((s: any) => s.id === settlementId ? { ...s, status, paidAt: status === 'paid' ? new Date().toISOString() : null } : s);
+  localStorage.setItem(`${SETTLEMENTS_PREFIX}${groupId}`, JSON.stringify(updated));
+  triggerLocalUpdate();
+}
+

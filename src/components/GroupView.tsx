@@ -18,7 +18,16 @@ import {
   Loader2,
   Pencil,
   X,
-  Download
+  Download,
+  Copy,
+  RotateCcw,
+  CheckCircle2,
+  Filter,
+  Search,
+  ArrowUpRight,
+  Lightbulb,
+  Layers,
+  Scale
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -52,9 +61,28 @@ import {
 } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 import { Group, Expense, GroupMember, CATEGORIES, BudgetType } from '../types';
-import { getLocalGroup, updateLocalGroup, deleteLocalGroup, getLocalExpenses, saveLocalExpense, updateLocalExpense, deleteLocalExpense, getLocalMembers } from '../utils/localDb';
+import { 
+  getLocalGroup, 
+  updateLocalGroup, 
+  deleteLocalGroup, 
+  getLocalExpenses, 
+  saveLocalExpense, 
+  updateLocalExpense, 
+  deleteLocalExpense, 
+  getLocalMembers,
+  duplicateLocalExpense,
+  restoreLocalExpense,
+  getLocalSettlements,
+  saveLocalSettlement,
+  updateLocalSettlementStatus
+} from '../utils/localDb';
 import { formatCurrency } from '../utils/format';
 import { handleFirestoreError, OperationType } from '../utils/errorHandling';
+import { calculateMemberBalances, generateSettlementSuggestions, SettlementRecord } from '../utils/settlementEngine';
+import { getGroupCategories, saveCategory } from '../utils/categoryService';
+import { generateFinancialInsights } from '../utils/insightsEngine';
+import { filterExpenses } from '../utils/searchAndFilterService';
+import { exportExpensesToCSV } from '../utils/exportImportService';
 
 interface GroupViewProps {
   groupId: string;
@@ -94,7 +122,22 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
 
   // Delete confirmation state
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
+  const [lastDeletedExpense, setLastDeletedExpense] = useState<Expense | null>(null);
+  const [showUndoToast, setShowUndoToast] = useState(false);
   const [isDeleteGroupConfirmOpen, setIsDeleteGroupConfirmOpen] = useState(false);
+
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('All');
+  const [filterPayer, setFilterPayer] = useState('All');
+
+  // Settlements state
+  const [settlements, setSettlements] = useState<SettlementRecord[]>([]);
+
+  // Category state
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [newCatName, setNewCatName] = useState('');
+  const [isAddCatOpen, setIsAddCatOpen] = useState(false);
 
   // CSV Export for current group data
   const handleExportCSV = () => {
@@ -302,15 +345,93 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
   };
 
   const handleDeleteExpense = async (id: string) => {
+    const target = expenses.find(e => e.id === id);
+    if (!target) return;
+
     try {
       if (user.uid === 'local_guest') {
         deleteLocalExpense(groupId, id);
       } else {
         await deleteDoc(doc(db, 'groups', groupId, 'expenses', id));
       }
+      setLastDeletedExpense(target);
+      setShowUndoToast(true);
       setExpenseToDelete(null);
+
+      // Auto-hide undo toast after 6 seconds
+      setTimeout(() => setShowUndoToast(false), 6000);
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `groups/${groupId}/expenses/${id}`);
+    }
+  };
+
+  const handleRestoreExpense = async () => {
+    if (!lastDeletedExpense) return;
+    try {
+      if (user.uid === 'local_guest') {
+        restoreLocalExpense(groupId, lastDeletedExpense);
+      } else {
+        await setDoc(doc(db, 'groups', groupId, 'expenses', lastDeletedExpense.id), {
+          amount: lastDeletedExpense.amount,
+          description: lastDeletedExpense.description,
+          category: lastDeletedExpense.category,
+          paidBy: lastDeletedExpense.paidBy,
+          date: lastDeletedExpense.date,
+          createdAt: lastDeletedExpense.createdAt,
+          splitType: lastDeletedExpense.splitType
+        });
+      }
+      setShowUndoToast(false);
+      setLastDeletedExpense(null);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, `groups/${groupId}/expenses`);
+    }
+  };
+
+  const handleDuplicateExpense = async (id: string) => {
+    try {
+      if (user.uid === 'local_guest') {
+        duplicateLocalExpense(groupId, id);
+      } else {
+        const target = expenses.find(e => e.id === id);
+        if (!target) return;
+        await addDoc(collection(db, 'groups', groupId, 'expenses'), {
+          amount: target.amount,
+          description: `${target.description} (Copy)`,
+          category: target.category,
+          paidBy: target.paidBy,
+          date: Timestamp.now(),
+          createdAt: serverTimestamp(),
+          splitType: target.splitType
+        });
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, `groups/${groupId}/expenses`);
+    }
+  };
+
+  const handleRecordSettlement = async (fromUserId: string, toUserId: string, amount: number) => {
+    const newRecord: SettlementRecord = {
+      id: 'settle_' + Math.random().toString(36).substring(2, 11),
+      groupId,
+      fromUserId,
+      toUserId,
+      amount,
+      status: 'paid',
+      createdAt: new Date().toISOString(),
+      paidAt: new Date().toISOString(),
+      createdBy: user.uid
+    };
+
+    try {
+      if (user.uid === 'local_guest') {
+        saveLocalSettlement(groupId, newRecord);
+        setSettlements(getLocalSettlements(groupId));
+      } else {
+        await addDoc(collection(db, 'groups', groupId, 'settlements'), newRecord);
+      }
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, `groups/${groupId}/settlements`);
     }
   };
 
@@ -381,6 +502,21 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
   const userSpent = currentPeriodExpenses.filter(e => e.paidBy === user.uid).reduce((sum, e) => sum + e.amount, 0);
   const perPerson = members.length > 0 ? totalSpent / members.length : 0;
   const balance = userSpent - perPerson;
+
+  // Derived calculations for settlements, search, filter, and insights
+  const memberBalances = calculateMemberBalances(members, expenses, settlements);
+  const settlementSuggestions = generateSettlementSuggestions(memberBalances);
+  const insights = generateFinancialInsights(expenses, members);
+
+  const membersMap = new Map<string, GroupMember>();
+  members.forEach(m => membersMap.set(m.uid, m));
+
+  const groupsList = group ? [group] : [];
+  const filteredExpenses = filterExpenses(expenses, groupsList, membersMap, {
+    keyword: searchQuery,
+    category: filterCategory,
+    payerId: filterPayer !== 'All' ? filterPayer : undefined
+  });
 
   // Budget calculation
   const currentBudgetSpent = totalSpent;
@@ -713,27 +849,84 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white flex items-center gap-3 font-display">
-              <Receipt className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              Transaction History
-            </h2>
-            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest font-display">{expenses.length} Total</div>
+        <div className="lg:col-span-2 space-y-8">
+          {/* Insights Banner */}
+          {insights.length > 0 && (
+            <div className="bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/20 rounded-[32px] p-6 space-y-3">
+              <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-xs uppercase tracking-wider font-display">
+                <Lightbulb className="w-4 h-4" />
+                Financial Insights
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {insights.map(ins => (
+                  <div key={ins.id} className="bg-white dark:bg-zinc-900/80 p-4 rounded-2xl border border-zinc-200/60 dark:border-zinc-800 text-xs">
+                    <p className="font-bold text-zinc-900 dark:text-white mb-1">{ins.title}</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed">{ins.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Transaction Header & Filters */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white flex items-center gap-3 font-display">
+                <Receipt className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                Transaction History
+              </h2>
+              <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest font-display">
+                {filteredExpenses.length} of {expenses.length} Expenses
+              </div>
+            </div>
+
+            {/* Filter controls bar */}
+            <div className="flex flex-wrap items-center gap-3 bg-white dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
+              <div className="flex-1 min-w-[180px] relative">
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+                <input
+                  type="text"
+                  placeholder="Search transactions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 text-zinc-900 dark:text-white"
+                />
+              </div>
+
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="px-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-medium text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="All">All Categories</option>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+
+              <select
+                value={filterPayer}
+                onChange={(e) => setFilterPayer(e.target.value)}
+                className="px-3 py-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-medium text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="All">All Payers</option>
+                {members.map(m => (
+                  <option key={m.uid} value={m.uid}>{m.displayName || m.email || m.uid}</option>
+                ))}
+              </select>
+            </div>
           </div>
           
           <div className="bg-white dark:bg-zinc-900 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 overflow-hidden shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
-            {expenses.length === 0 ? (
+            {filteredExpenses.length === 0 ? (
               <div className="p-10 sm:p-20 text-center">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-purple-50 dark:bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20">
                   <Receipt className="w-8 h-8 sm:w-10 sm:h-10" />
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2 font-display">No transactions yet</h3>
-                <p className="text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto text-sm">Start tracking your shared expenses by adding your first transaction.</p>
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2 font-display">No transactions found</h3>
+                <p className="text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto text-sm">No expenses match your search or filter criteria.</p>
               </div>
             ) : (
               <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                {expenses.map(expense => (
+                {filteredExpenses.map(expense => (
                   <div key={expense.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between group transition-all duration-200 gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                     <div className="flex items-center gap-4 sm:gap-5 min-w-0">
                       <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex flex-col items-center justify-center text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 transition-colors shrink-0">
@@ -761,6 +954,13 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                       </div>
                       <div className="flex items-center gap-1">
                         <button 
+                          onClick={() => handleDuplicateExpense(expense.id)}
+                          className="p-2 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl sm:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-purple-50 dark:focus:bg-purple-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                          title="Duplicate Transaction"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <button 
                           onClick={() => setEditingExpense(expense)}
                           className="p-2 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl sm:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-purple-50 dark:focus:bg-purple-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                           title="Edit Expense"
@@ -783,40 +983,99 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
           </div>
         </div>
 
-        <div>
-          <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-8 flex items-center gap-3 font-display">
-            <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            Group Members
-          </h2>
-          <div className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
-            <div className="space-y-6">
-              {members.map(member => (
-                <div key={member.uid} className="flex items-center justify-between group">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <div className="relative shrink-0">
-                      <div className="w-12 h-12 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold border border-purple-100 dark:border-purple-500/20 group-hover:border-purple-500 transition-colors">
-                        {member.displayName?.charAt(0)}
-                      </div>
-                      {member.uid === group.createdBy && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 rounded-full border-2 border-white dark:border-zinc-900 flex items-center justify-center">
-                          <Sparkles className="w-2 h-2 text-white" />
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6 flex items-center gap-3 font-display">
+              <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              Group Members
+            </h2>
+            <div className="bg-white dark:bg-zinc-900 p-6 sm:p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
+              <div className="space-y-6">
+                {members.map(member => (
+                  <div key={member.uid} className="flex items-center justify-between group">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="relative shrink-0">
+                        <div className="w-12 h-12 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold border border-purple-100 dark:border-purple-500/20 group-hover:border-purple-500 transition-colors">
+                          {member.displayName?.charAt(0)}
                         </div>
-                      )}
+                        {member.uid === group.createdBy && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 rounded-full border-2 border-white dark:border-zinc-900 flex items-center justify-center">
+                            <Sparkles className="w-2 h-2 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{member.displayName}</p>
+                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest truncate font-display">{member.role}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{member.displayName}</p>
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest truncate font-display">{member.role}</p>
-                    </div>
+                    {member.uid === group.createdBy && (
+                      <span className="shrink-0 text-[9px] font-bold text-purple-600 bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-100 dark:border-purple-500/20 ml-2 font-display">OWNER</span>
+                    )}
                   </div>
-                  {member.uid === group.createdBy && (
-                    <span className="shrink-0 text-[9px] font-bold text-purple-600 bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-100 dark:border-purple-500/20 ml-2 font-display">OWNER</span>
-                  )}
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Debt Simplification & Settlements Widget */}
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-6 flex items-center gap-3 font-display">
+              <Scale className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              Suggested Settlements
+            </h2>
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-[32px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 space-y-4">
+              {settlementSuggestions.length === 0 ? (
+                <div className="text-center py-6">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+                  <p className="text-xs font-bold text-zinc-900 dark:text-white">All Debts Settled!</p>
+                  <p className="text-[11px] text-zinc-500">No pending transfers needed.</p>
                 </div>
-              ))}
+              ) : (
+                settlementSuggestions.map((s, idx) => (
+                  <div key={idx} className="p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200/60 dark:border-zinc-800 flex items-center justify-between gap-3">
+                    <div className="text-xs min-w-0">
+                      <p className="font-bold text-zinc-900 dark:text-white truncate">
+                        {s.fromUserName} <span className="text-purple-600 font-normal">owes</span> {s.toUserName}
+                      </p>
+                      <p className="text-purple-600 dark:text-purple-400 font-mono font-bold text-sm">${s.amount.toFixed(2)}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRecordSettlement(s.fromUserId, s.toUserId, s.amount)}
+                      className="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-[11px] font-bold hover:bg-emerald-700 transition-all cursor-pointer font-display shrink-0"
+                    >
+                      Settle Debt
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Undo Delete Toast */}
+      <AnimatePresence>
+        {showUndoToast && lastDeletedExpense && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-6 right-6 z-50 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-zinc-700 dark:border-zinc-300"
+          >
+            <div className="text-xs">
+              <span className="font-bold">Expense deleted:</span> "{lastDeletedExpense.description}"
+            </div>
+            <button
+              onClick={handleRestoreExpense}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition-all active:scale-95 cursor-pointer font-display"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Undo
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Add Expense Modal */}
       <AnimatePresence>

@@ -2,6 +2,21 @@
 
 All notable changes to the Budgeted application will be documented in this file.
 
+## [1.4.0] - Business Logic, Expense Splitting, Debt Simplification & Data Engines
+
+### Added
+- **Money & Cent Reconciliation Engine (`moneyUtils.ts`)**: Built integer minor unit conversions (cents) with safe floating-point arithmetic and zero-drift cent distribution math.
+- **Advanced Expense Splitting (`splitEngine.ts`)**: Supported equal, exact custom amount, percentage, and share-based expense splitting with exact cent reconciliation.
+- **Debt Simplification & Settlements (`settlementEngine.ts`)**: Integrated greedy graph debt simplification solver that minimizes required transfers between group members with interactive "Settle Debt" execution and settlement history.
+- **Custom Categories Service (`categoryService.ts`)**: Built custom category management with active/archived state tracking, stable IDs, description, icon pairing, and duplicate name prevention.
+- **Recurring Expense Processing (`recurringService.ts`)**: Implemented idempotent rule engine supporting daily, weekly, monthly, and yearly recurring expenses with automated next-occurrence calculation.
+- **Budgeting & Overspending Detection (`budgetService.ts`)**: Added group and category budget tracking with utilization percentage, remaining balance, and overspending alert badges.
+- **Analytics & Deterministic Insights Engine (`analyticsService.ts`, `insightsEngine.ts`)**: Generated factual spending trends, Month-over-Month percentage shifts, average daily spending, top categories, and single largest expense insights.
+- **Search & Filter Engine (`searchAndFilterService.ts`)**: Composed multi-criteria search filtering across description, category, payer, amount ranges, dates, and group names.
+- **Export & Import Backup Engine (`exportImportService.ts`)**: Implemented versioned JSON backup & restore with schema validation, CSV expense import parsing with validation preview, and Guest Mode -> Auth Firebase migration.
+- **Duplicate & Undo Delete Actions**: Added one-click expense duplication and floating Undo toast notification for deleted transactions.
+- **Hardened Security Rules (`firestore.rules`)**: Extended Master Gate security rules for settlements, recurring expense rules, and group member role permissions (`owner`, `admin`, `member`).
+
 ## [1.3.0] - Dashboard Widgets, Global Search & Quick Tools
 
 ### Added
