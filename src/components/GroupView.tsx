@@ -76,7 +76,8 @@ import {
   saveLocalSettlement,
   updateLocalSettlementStatus
 } from '../utils/localDb';
-import { formatCurrency } from '../utils/format';
+import { formatCurrency, formatMoney } from '../utils/format';
+import { WORLD_CURRENCIES, getCurrencySymbol } from '../utils/currencies';
 import { handleFirestoreError, OperationType } from '../utils/errorHandling';
 import { calculateMemberBalances, generateSettlementSuggestions, SettlementRecord } from '../utils/settlementEngine';
 import { getGroupCategories, saveCategory } from '../utils/categoryService';
@@ -110,6 +111,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
   // Settings states
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editCurrency, setEditCurrency] = useState('USD');
   const [editMaxBudget, setEditMaxBudget] = useState('');
   const [editBudgetType, setEditBudgetType] = useState<BudgetType>('monthly');
 
@@ -206,6 +208,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
           setGroup(localGroup);
           setEditName(localGroup.name);
           setEditDescription(localGroup.description || '');
+          setEditCurrency(localGroup.currency || 'USD');
           setEditMaxBudget(localGroup.maxBudget?.toString() || '');
           setEditBudgetType(localGroup.budgetType || 'monthly');
         }
@@ -229,6 +232,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
         setGroup({ id: doc.id, ...data } as Group);
         setEditName(data.name);
         setEditDescription(data.description || '');
+        setEditCurrency(data.currency || 'USD');
         setEditMaxBudget(data.maxBudget?.toString() || '');
         setEditBudgetType(data.budgetType || 'monthly');
       }
@@ -456,6 +460,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
       const updateData: any = {
         name: editName.trim(),
         description: editDescription.trim(),
+        currency: editCurrency,
         maxBudget: editMaxBudget ? parseFloat(editMaxBudget) : null,
         budgetType: editMaxBudget ? editBudgetType : 'total'
       };
@@ -498,7 +503,9 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
     isDateInCurrentPeriod(e.date.toDate(), group?.budgetType || 'total')
   );
 
+  const groupCurrency = group?.currency || 'USD';
   const totalSpent = currentPeriodExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const currentBudgetSpent = totalSpent;
   const userSpent = currentPeriodExpenses.filter(e => e.paidBy === user.uid).reduce((sum, e) => sum + e.amount, 0);
   const perPerson = members.length > 0 ? totalSpent / members.length : 0;
   const balance = userSpent - perPerson;
@@ -519,7 +526,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
   });
 
   // Budget calculation
-  const currentBudgetSpent = totalSpent;
+  // (currentBudgetSpent is defined above)
 
   // Chart Data Preparation
   const getLineChartData = () => {
@@ -687,9 +694,9 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 font-display">Total Group Spend</p>
             <p 
               className="text-4xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight truncate"
-              title={`$${formatCurrency(totalSpent)}`}
+              title={formatMoney(totalSpent, groupCurrency)}
             >
-              ${formatCurrency(totalSpent)}
+              {formatMoney(totalSpent, groupCurrency)}
             </p>
             {group.maxBudget && (
               <div className="mt-6">
@@ -706,7 +713,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                   />
                 </div>
                 <p className="text-[10px] text-zinc-500 mt-2 font-medium">
-                  ${formatCurrency(currentBudgetSpent)} of ${formatCurrency(group.maxBudget)}
+                  {formatMoney(currentBudgetSpent, groupCurrency)} of {formatMoney(group.maxBudget, groupCurrency)}
                 </p>
               </div>
             )}
@@ -721,9 +728,9 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 font-display">Your Share</p>
             <p 
               className="text-4xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-zinc-900 dark:text-white font-display tracking-tight truncate"
-              title={`$${formatCurrency(perPerson)}`}
+              title={formatMoney(perPerson, groupCurrency)}
             >
-              ${formatCurrency(perPerson)}
+              {formatMoney(perPerson, groupCurrency)}
             </p>
             <p className="text-xs font-medium text-zinc-500 mt-4">
               {totalSpent > 0 ? ((userSpent / totalSpent) * 100).toFixed(0) : 0}% of total paid by you
@@ -741,9 +748,9 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
             </p>
             <p 
               className={`text-4xl md:text-2xl lg:text-3xl xl:text-4xl font-bold font-display tracking-tight truncate ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
-              title={`$${formatCurrency(Math.abs(balance))}`}
+              title={formatMoney(Math.abs(balance), groupCurrency)}
             >
-              ${formatCurrency(Math.abs(balance))}
+              {formatMoney(Math.abs(balance), groupCurrency)}
             </p>
           </div>
         </button>
@@ -772,7 +779,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                     axisLine={false} 
                     tickLine={false} 
                     tick={{ fontSize: 10, fill: '#a1a1aa', fontWeight: 500 }}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => formatMoney(value, groupCurrency)}
                   />
                   <Tooltip 
                     contentStyle={{ 
@@ -785,7 +792,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                     }}
                     itemStyle={{ fontSize: '12px', fontWeight: 600, color: theme === 'dark' ? '#ffffff' : '#18181b' }}
                     labelStyle={{ fontSize: '10px', color: '#71717a', marginBottom: '4px', textTransform: 'uppercase', fontWeight: 700 }}
-                    formatter={(value: number) => [`$${formatCurrency(value)}`, 'Spent']}
+                    formatter={(value: number) => [formatMoney(value, groupCurrency), 'Spent']}
                   />
                   <Line 
                     type="monotone" 
@@ -824,7 +831,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                     })}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number) => [`$${formatCurrency(value)}`, 'Total']}
+                    formatter={(value: number) => [formatMoney(value, groupCurrency), 'Total']}
                     contentStyle={{ 
                       borderRadius: '16px', 
                       border: '1px solid ' + (theme === 'dark' ? '#27272a' : '#e4e4e7'), 
@@ -946,9 +953,9 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                       <div className="text-left sm:text-right min-w-0">
                         <p 
                           className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-white font-mono tracking-tight truncate"
-                          title={`$${formatCurrency(expense.amount)}`}
+                          title={formatMoney(expense.amount, groupCurrency)}
                         >
-                          ${formatCurrency(expense.amount)}
+                          {formatMoney(expense.amount, groupCurrency)}
                         </p>
                         <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-widest font-display">Amount</p>
                       </div>
@@ -1038,7 +1045,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                       <p className="font-bold text-zinc-900 dark:text-white truncate">
                         {s.fromUserName} <span className="text-purple-600 font-normal">owes</span> {s.toUserName}
                       </p>
-                      <p className="text-purple-600 dark:text-purple-400 font-mono font-bold text-sm">${s.amount.toFixed(2)}</p>
+                      <p className="text-purple-600 dark:text-purple-400 font-mono font-bold text-sm">{formatMoney(s.amount, groupCurrency)}</p>
                     </div>
                     <button
                       onClick={() => handleRecordSettlement(s.fromUserId, s.toUserId, s.amount)}
@@ -1120,7 +1127,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                 <div>
                   <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Amount</label>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">{getCurrencySymbol(groupCurrency)}</span>
                     <input
                       type="number"
                       step="0.01"
@@ -1314,6 +1321,20 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                         className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium resize-none h-24 text-zinc-900 dark:text-white"
                       />
                     </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Group Currency</label>
+                      <select
+                        value={editCurrency}
+                        onChange={(e) => setEditCurrency(e.target.value)}
+                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
+                      >
+                        {WORLD_CURRENCIES.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.code} ({c.symbol}) - {c.name} - {c.country}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -1323,7 +1344,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                     <div>
                       <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Max Budget</label>
                       <div className="relative">
-                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
+                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">{getCurrencySymbol(editCurrency)}</span>
                         <input
                           type="number"
                           step="0.01"
@@ -1447,7 +1468,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
             >
               <p id="stat-title" className="text-xs font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 font-display">{selectedStatDetails.title}</p>
               <p className="text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-white font-display tracking-tight mb-2 break-all">
-                ${formatCurrency(selectedStatDetails.amount)}
+                {formatMoney(selectedStatDetails.amount, groupCurrency)}
               </p>
               {selectedStatDetails.subtitle && (
                 <p className="text-sm font-medium text-zinc-500 mt-4">

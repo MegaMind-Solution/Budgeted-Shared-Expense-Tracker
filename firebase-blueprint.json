@@ -26,7 +26,8 @@
         "type": { "type": "string", "enum": ["personal", "household", "trip", "other"] },
         "memberIds": { "type": "array", "items": { "type": "string" } },
         "maxBudget": { "type": "number" },
-        "budgetType": { "type": "string", "enum": ["weekly", "monthly", "total"] }
+        "budgetType": { "type": "string", "enum": ["weekly", "monthly", "total"] },
+        "currency": { "type": "string" }
       },
       "required": ["name", "createdBy", "type", "memberIds"]
     },

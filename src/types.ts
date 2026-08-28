@@ -23,6 +23,7 @@ export interface Group {
   memberIds: string[];
   maxBudget?: number;
   budgetType?: BudgetType;
+  currency?: string; // ISO 4217 code, e.g. 'USD', 'EUR', 'PKR'
 }
 
 export interface GroupMember {

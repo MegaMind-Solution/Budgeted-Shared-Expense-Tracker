@@ -2,6 +2,14 @@
 
 All notable changes to the Budgeted application will be documented in this file.
 
+## [1.5.0] - Multi-Currency Support for All Independent World Countries
+
+### Added
+- **Global ISO 4217 Currency Database (`currencies.ts`)**: Embedded comprehensive dictionary of ISO 4217 currencies covering all independent world countries with currency codes, symbols, full names, and country names.
+- **Group Currency Setting**: Integrated currency picker in Group Creation (`CreateGroupModal`) and Group Settings (`GroupView`), allowing each group to operate in its own national currency.
+- **Universal Currency Formatting (`formatMoney`)**: Refactored global financial formatting utility in `format.ts` to seamlessly prepend native currency symbols (e.g. `$`, `€`, `£`, `¥`, `₹`, `R$`, `A$`, `AED`, `KSh`, `Kč`) with symbol-aware spacing across all expense lists, stat cards, charts, tooltips, budget alerts, and transaction modals.
+- **Local & Firestore Persistence**: Extended `Group` interface and `firebase-blueprint.json` schema to save and sync `currency` across Guest Mode and Firestore.
+
 ## [1.4.0] - Business Logic, Expense Splitting, Debt Simplification & Data Engines
 
 ### Added

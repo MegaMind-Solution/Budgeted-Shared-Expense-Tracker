@@ -7,6 +7,7 @@ import { User } from 'firebase/auth';
 import { GroupType, BudgetType } from '../types';
 import { handleFirestoreError, OperationType } from '../utils/errorHandling';
 import { saveLocalGroup } from '../utils/localDb';
+import { WORLD_CURRENCIES, getCurrencySymbol } from '../utils/currencies';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export default function CreateGroupModal({ isOpen, onClose, user }: CreateGroupM
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<GroupType>('household');
+  const [currency, setCurrency] = useState('USD');
   const [maxBudget, setMaxBudget] = useState('');
   const [budgetType, setBudgetType] = useState<BudgetType>('monthly');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,6 +45,7 @@ export default function CreateGroupModal({ isOpen, onClose, user }: CreateGroupM
           name: name.trim(),
           description: description.trim(),
           type,
+          currency,
           createdBy: user.uid,
           memberIds: [user.uid],
         };
@@ -59,6 +62,7 @@ export default function CreateGroupModal({ isOpen, onClose, user }: CreateGroupM
           name: name.trim(),
           description: description.trim(),
           type,
+          currency,
           createdBy: user.uid,
           createdAt: serverTimestamp(),
           memberIds: [user.uid],
@@ -181,13 +185,29 @@ export default function CreateGroupModal({ isOpen, onClose, user }: CreateGroupM
                   </div>
                 </div>
 
+                <div>
+                  <label htmlFor="group-currency" className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-2 sm:mb-3 font-display">Group Currency</label>
+                  <select
+                    id="group-currency"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="w-full px-5 py-3.5 sm:py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-bold text-zinc-900 dark:text-white"
+                  >
+                    {WORLD_CURRENCIES.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} ({c.symbol}) - {c.name} - {c.country}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="pt-6 sm:pt-8 border-t border-zinc-100 dark:border-zinc-800">
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-4 sm:mb-6 font-display">Budget Settings (Optional)</h3>
                   <div className="grid grid-cols-2 gap-4 sm:gap-6">
                     <div>
                       <label htmlFor="max-budget" className="block text-[10px] font-bold text-zinc-500 mb-2 sm:mb-3 uppercase tracking-wider font-display">Max Budget</label>
                       <div className="relative">
-                        <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 font-bold">$</span>
+                        <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 font-bold">{getCurrencySymbol(currency)}</span>
                         <input
                           id="max-budget"
                           type="number"

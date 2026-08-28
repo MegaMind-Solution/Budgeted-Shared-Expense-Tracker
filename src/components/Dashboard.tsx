@@ -37,7 +37,8 @@ import { Group, Expense, BudgetType, CATEGORIES } from '../types';
 import { db } from '../firebase';
 import { collection, query, onSnapshot, orderBy, limit, doc, updateDoc, deleteDoc, Timestamp, addDoc } from 'firebase/firestore';
 import { User } from 'firebase/auth';
-import { formatCurrency } from '../utils/format';
+import { formatCurrency, formatMoney } from '../utils/format';
+import { getCurrencySymbol } from '../utils/currencies';
 import { handleFirestoreError, OperationType } from '../utils/errorHandling';
 import { getLocalExpenses, updateLocalExpense, deleteLocalExpense, saveLocalExpense } from '../utils/localDb';
 
@@ -390,7 +391,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
             if (totalSpent > group.maxBudget) {
               newAlerts.push({
                 id: `over-budget-${group.id}`,
-                message: `Group "${group.name}" is over its ${group.budgetType || 'total'} budget ($${totalSpent.toFixed(2)} / $${group.maxBudget.toFixed(2)})`,
+                message: `Group "${group.name}" is over its ${group.budgetType || 'total'} budget (${formatMoney(totalSpent, group.currency)} / ${formatMoney(group.maxBudget, group.currency)})`,
                 type: 'warning' as const,
                 groupId: group.id,
               });
@@ -452,7 +453,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
           if (totalSpent > g.maxBudget) {
             newAlerts.push({
               id: `over-budget-${g.id}`,
-              message: `Group "${g.name}" is over its ${g.budgetType || 'total'} budget ($${totalSpent.toFixed(2)} / $${g.maxBudget.toFixed(2)})`,
+              message: `Group "${g.name}" is over its ${g.budgetType || 'total'} budget (${formatMoney(totalSpent, g.currency)} / ${formatMoney(g.maxBudget, g.currency)})`,
               type: 'warning' as const,
               groupId: g.id
             });
@@ -563,7 +564,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                     </div>
                     {group.maxBudget && (
                       <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-4 font-display">
-                        Budget: ${group.maxBudget} ({group.budgetType})
+                        Budget: {formatMoney(group.maxBudget, group.currency)} ({group.budgetType})
                       </div>
                     )}
                   </button>
@@ -614,7 +615,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                       </div>
                       <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
                         <span className="text-lg font-bold font-mono text-zinc-900 dark:text-white">
-                          ${formatCurrency(expense.amount)}
+                          {formatMoney(expense.amount, group?.currency)}
                         </span>
                         <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1.5 transition-transform" />
                       </div>
@@ -958,9 +959,9 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                         <div className="text-left sm:text-right min-w-0">
                           <p 
                             className={`text-lg sm:text-xl font-bold font-mono truncate ${expense.paidBy === user.uid ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-900 dark:text-white'}`}
-                            title={`$${formatCurrency(expense.amount)}`}
+                            title={formatMoney(expense.amount, groups.find(g => g.id === expense.groupId)?.currency)}
                           >
-                            ${formatCurrency(expense.amount)}
+                            {formatMoney(expense.amount, groups.find(g => g.id === expense.groupId)?.currency)}
                           </p>
                           <p className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-widest font-bold mt-0.5">
                             {expense.paidBy === user.uid ? 'You paid' : 'Someone paid'}
@@ -1072,7 +1073,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 <div>
                   <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Amount</label>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">{getCurrencySymbol(groups.find(g => g.id === editingExpense?.groupId)?.currency)}</span>
                     <input
                       type="number"
                       step="0.01"
@@ -1231,7 +1232,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 <div>
                   <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Amount</label>
                   <div className="relative">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">{getCurrencySymbol(groups.find(g => g.id === quickGroupId)?.currency)}</span>
                     <input
                       type="number"
                       step="0.01"
