@@ -1,4 +1,4 @@
-# Budgeted - Shared Expense Tracker with Guest Mode
+# Budgeted - Shared Expense Tracker
 
 A collaborative budget and expense tracker designed for households, trips, and personal use. Split bills easily, track spending by category, and analyze historical habits seamlessly.
 

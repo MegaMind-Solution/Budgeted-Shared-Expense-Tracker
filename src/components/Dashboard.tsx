@@ -14,7 +14,11 @@ import {
   Loader2,
   X,
   Search,
-  Download
+  Download,
+  Wrench,
+  Sparkles,
+  PieChart as PieChartIcon,
+  UserPlus
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -24,7 +28,10 @@ import {
   YAxis, 
   Tooltip as RechartsTooltip, 
   Legend, 
-  CartesianGrid 
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
 import { Group, Expense, BudgetType, CATEGORIES } from '../types';
 import { db } from '../firebase';
@@ -59,6 +66,8 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
 
   const [allGroupsExpenses, setAllGroupsExpenses] = useState<DashboardExpense[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [quickToolsOpen, setQuickToolsOpen] = useState(false);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   // Quick Add states
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -82,9 +91,39 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
     return groups.filter(
       group => 
         group.name.toLowerCase().includes(queryStr) || 
+        (group.description && group.description.toLowerCase().includes(queryStr)) ||
         group.type.toLowerCase().includes(queryStr)
     );
   }, [groups, searchQuery]);
+
+  // Filtered expenses based on search query
+  const filteredExpenses = React.useMemo(() => {
+    const queryStr = searchQuery.toLowerCase().trim();
+    if (!queryStr) return [];
+    return allGroupsExpenses.filter(expense => {
+      const group = groups.find(g => g.id === expense.groupId);
+      const groupName = group ? group.name.toLowerCase() : '';
+      const paidByStr = expense.paidBy === user.uid ? 'you' : expense.paidBy.toLowerCase();
+      return (
+        expense.description.toLowerCase().includes(queryStr) ||
+        expense.category.toLowerCase().includes(queryStr) ||
+        groupName.includes(queryStr) ||
+        paidByStr.includes(queryStr) ||
+        expense.amount.toString().includes(queryStr)
+      );
+    });
+  }, [allGroupsExpenses, groups, searchQuery, user.uid]);
+
+  // Spending distribution by category for Recharts Pie Chart
+  const categoryPieData = React.useMemo(() => {
+    const catTotals: { [key: string]: number } = {};
+    allGroupsExpenses.forEach(e => {
+      catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+    });
+    return Object.entries(catTotals)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [allGroupsExpenses]);
 
   // CSV Export for personal records
   const handleExportCSV = () => {
@@ -464,12 +503,13 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
         </div>
       </header>
 
-      {/* Search Bar */}
+      {/* Global Search Bar */}
       <div className="relative mb-10 max-w-xl">
         <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
         <input
+          ref={searchInputRef}
           type="text"
-          placeholder="Search groups by name or type (e.g. personal, household, trip)..."
+          placeholder="Search groups and expenses by keyword (e.g., Groceries, Household, Dinner)..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm dark:text-white font-medium shadow-sm outline-none"
@@ -485,47 +525,105 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
       </div>
 
       {searchQuery.trim() !== '' ? (
-        <section className="mb-12">
-          <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display mb-6">
-            Search Results ({filteredGroups.length})
-          </h2>
-          {filteredGroups.length === 0 ? (
-            <div className="p-12 bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 text-center text-zinc-500 dark:text-zinc-400 font-medium">
-              No groups match "{searchQuery}"
+        <section className="mb-12 space-y-10">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                Matching Groups ({filteredGroups.length})
+              </h2>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredGroups.map(group => (
-                <button
-                  key={group.id}
-                  onClick={() => onSelectGroup(group.id)}
-                  className="text-left bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 dark:hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/5 transition-all group flex flex-col justify-between h-44 cursor-pointer relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-zinc-50 dark:bg-zinc-800/20 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform animate-pulse" />
-                  <div className="relative z-10 w-full">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border ${
-                        group.type === 'personal' ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' :
-                        group.type === 'household' ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' :
-                        group.type === 'trip' ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' :
-                        'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20'
-                      }`}>
-                        {group.type}
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1.5 transition-transform" />
+            {filteredGroups.length === 0 ? (
+              <div className="p-8 bg-white dark:bg-zinc-900 rounded-[28px] border border-zinc-200 dark:border-zinc-800 text-center text-zinc-500 dark:text-zinc-400 font-medium text-sm">
+                No groups match "{searchQuery}"
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredGroups.map(group => (
+                  <button
+                    key={group.id}
+                    onClick={() => onSelectGroup(group.id)}
+                    className="text-left bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 dark:hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/5 transition-all group flex flex-col justify-between h-44 cursor-pointer relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-zinc-50 dark:bg-zinc-800/20 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform animate-pulse" />
+                    <div className="relative z-10 w-full">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border ${
+                          group.type === 'personal' ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' :
+                          group.type === 'household' ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' :
+                          group.type === 'trip' ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' :
+                          'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20'
+                        }`}>
+                          {group.type}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1.5 transition-transform" />
+                      </div>
+                      <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-1 mb-1 font-display">{group.name}</h3>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">{group.description || 'No description provided.'}</p>
                     </div>
-                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-1 mb-1 font-display">{group.name}</h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">{group.description || 'No description provided.'}</p>
-                  </div>
-                  {group.maxBudget && (
-                    <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-4 font-display">
-                      Budget: ${group.maxBudget} ({group.budgetType})
-                    </div>
-                  )}
-                </button>
-              ))}
+                    {group.maxBudget && (
+                      <div className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-4 font-display">
+                        Budget: ${group.maxBudget} ({group.budgetType})
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display flex items-center gap-2">
+                <Receipt className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                Matching Expenses ({filteredExpenses.length})
+              </h2>
             </div>
-          )}
+            {filteredExpenses.length === 0 ? (
+              <div className="p-8 bg-white dark:bg-zinc-900 rounded-[28px] border border-zinc-200 dark:border-zinc-800 text-center text-zinc-500 dark:text-zinc-400 font-medium text-sm">
+                No expenses match "{searchQuery}"
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800">
+                {filteredExpenses.map(expense => {
+                  const group = groups.find(g => g.id === expense.groupId);
+                  return (
+                    <div 
+                      key={expense.id}
+                      onClick={() => onSelectGroup(expense.groupId)}
+                      className="p-5 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer gap-4 group"
+                    >
+                      <div className="flex items-center gap-4 min-w-0">
+                        <div className="w-11 h-11 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 shrink-0">
+                          <Receipt className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-zinc-900 dark:text-white text-base group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">{expense.description}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider px-2 py-0.5 bg-purple-50 dark:bg-purple-500/10 rounded-md border border-purple-100 dark:border-purple-500/20">{expense.category}</span>
+                            <span className="text-[10px] text-zinc-500 font-mono font-bold">
+                              {expense.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
+                            {group && (
+                              <span className="text-[10px] text-zinc-400 font-medium italic">
+                                in {group.name}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                        <span className="text-lg font-bold font-mono text-zinc-900 dark:text-white">
+                          ${formatCurrency(expense.amount)}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1.5 transition-transform" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </section>
       ) : (
         <>
@@ -739,9 +837,90 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
             )}
           </section>
 
+          {/* Category Spending Distribution Pie Chart */}
+          <section className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display flex items-center gap-2">
+                  <PieChartIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  Spending Distribution by Category
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">Breakdown of all expenses grouped by category</p>
+              </div>
+            </div>
+
+            {categoryPieData.length === 0 ? (
+              <div className="h-[260px] flex flex-col items-center justify-center text-center p-6 bg-zinc-50 dark:bg-zinc-800/10 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-[24px]">
+                <PieChartIcon className="w-10 h-10 text-zinc-300 dark:text-zinc-700 mb-3" />
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">No category spending recorded yet.</p>
+              </div>
+            ) : (
+              <div className="h-[280px] w-full flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryPieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={95}
+                      paddingAngle={4}
+                      dataKey="value"
+                    >
+                      {categoryPieData.map((entry, index) => {
+                        const PIE_COLORS = ['#9333ea', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6', '#a855f7', '#71717a'];
+                        return <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />;
+                      })}
+                    </Pie>
+                    <RechartsTooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0];
+                          const total = categoryPieData.reduce((sum, item) => sum + item.value, 0);
+                          const percentage = total > 0 ? ((Number(data.value) / total) * 100).toFixed(1) : '0';
+                          return (
+                            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-3.5 rounded-2xl shadow-xl">
+                              <p className="font-bold text-zinc-900 dark:text-white text-xs font-display mb-1">{data.name}</p>
+                              <div className="flex items-center gap-3">
+                                <span className="font-mono font-bold text-purple-600 dark:text-purple-400 text-sm">
+                                  ${formatCurrency(Number(data.value))}
+                                </span>
+                                <span className="text-[10px] font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
+                                  {percentage}%
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36} 
+                      iconType="circle"
+                      iconSize={8}
+                      wrapperStyle={{ fontSize: 11, fontWeight: 500 }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </section>
+
+          {/* Recent Activity Widget */}
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Recent Activity</h2>
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display flex items-center gap-2">
+                  <Receipt className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  Recent Activity
+                </h2>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">Last 5 transactions added across your groups</p>
+              </div>
+              <span className="text-xs font-bold px-3 py-1 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-full border border-purple-100 dark:border-purple-500/20 font-display">
+                Top 5 Latest
+              </span>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 overflow-hidden">
               {recentExpenses.length === 0 ? (
@@ -753,7 +932,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {recentExpenses.map(expense => (
+                  {recentExpenses.slice(0, 5).map(expense => (
                     <div key={expense.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between transition-all group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 gap-4">
                       <div className="flex items-center gap-4 min-w-0">
                         <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 transition-all border border-purple-100 dark:border-purple-500/20 shrink-0">
@@ -766,7 +945,10 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                             <span className="text-[9px] sm:text-[10px] text-zinc-500 font-mono font-bold">
                               {expense.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </span>
-                            <span className="text-[9px] sm:text-[10px] text-zinc-400 font-medium italic truncate max-w-[100px] sm:max-w-none">
+                            <span 
+                              onClick={() => onSelectGroup(expense.groupId)}
+                              className="text-[9px] sm:text-[10px] text-purple-600 dark:text-purple-400 hover:underline font-medium italic truncate max-w-[120px] sm:max-w-none cursor-pointer"
+                            >
                               in {groups.find(g => g.id === expense.groupId)?.name}
                             </span>
                           </div>
@@ -1113,21 +1295,131 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
         )}
       </AnimatePresence>
 
-      {/* Quick Add FAB */}
-      {groups.length > 0 && (
-        <div className="fixed bottom-8 right-8 z-[50]">
-          <button
-            onClick={() => setQuickAddOpen(true)}
-            className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-full shadow-2xl shadow-purple-600/40 hover:scale-110 active:scale-95 transition-all group relative outline-none focus:ring-4 focus:ring-purple-500/40 cursor-pointer"
-            title="Quick Add Expense"
-          >
-            <Plus className="w-7 h-7 transition-transform group-hover:rotate-90 duration-300" />
-            <span className="absolute right-16 bg-zinc-900 text-white text-xs font-bold py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-zinc-800">
-              Quick Add Expense
-            </span>
-          </button>
-        </div>
-      )}
+      {/* FAB Quick Tools Button */}
+      <div className="fixed bottom-8 right-8 z-[60] flex flex-col items-end gap-3">
+        <AnimatePresence>
+          {quickToolsOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setQuickToolsOpen(false)}
+                className="fixed inset-0 z-[-1] bg-zinc-950/30 backdrop-blur-[2px]"
+              />
+
+              {/* Action 1: Add Expense */}
+              {groups.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                  transition={{ duration: 0.15, delay: 0.05 }}
+                  className="flex items-center gap-3"
+                >
+                  <span className="bg-zinc-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-lg border border-zinc-800 font-display whitespace-nowrap">
+                    Add Expense
+                  </span>
+                  <button
+                    onClick={() => {
+                      setQuickAddOpen(true);
+                      setQuickToolsOpen(false);
+                    }}
+                    className="w-12 h-12 bg-white dark:bg-zinc-900 text-purple-600 dark:text-purple-400 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-xl hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    title="Quick Add Expense"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              )}
+
+              {/* Action 2: Create Group */}
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                transition={{ duration: 0.15, delay: 0.08 }}
+                className="flex items-center gap-3"
+              >
+                <span className="bg-zinc-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-lg border border-zinc-800 font-display whitespace-nowrap">
+                  Create Group
+                </span>
+                <button
+                  onClick={() => {
+                    (window as any).openCreateGroupModal?.();
+                    setQuickToolsOpen(false);
+                  }}
+                  className="w-12 h-12 bg-white dark:bg-zinc-900 text-purple-600 dark:text-purple-400 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-xl hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  title="Create New Group"
+                >
+                  <UserPlus className="w-5 h-5" />
+                </button>
+              </motion.div>
+
+              {/* Action 3: Export CSV */}
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                transition={{ duration: 0.15, delay: 0.11 }}
+                className="flex items-center gap-3"
+              >
+                <span className="bg-zinc-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-lg border border-zinc-800 font-display whitespace-nowrap">
+                  Export CSV
+                </span>
+                <button
+                  onClick={() => {
+                    handleExportCSV();
+                    setQuickToolsOpen(false);
+                  }}
+                  disabled={allGroupsExpenses.length === 0}
+                  className="w-12 h-12 bg-white dark:bg-zinc-900 text-purple-600 dark:text-purple-400 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-xl hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Export Expenses CSV"
+                >
+                  <Download className="w-5 h-5" />
+                </button>
+              </motion.div>
+
+              {/* Action 4: Search & Filter */}
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                transition={{ duration: 0.15, delay: 0.14 }}
+                className="flex items-center gap-3"
+              >
+                <span className="bg-zinc-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl shadow-lg border border-zinc-800 font-display whitespace-nowrap">
+                  Search & Filter
+                </span>
+                <button
+                  onClick={() => {
+                    searchInputRef.current?.focus();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setQuickToolsOpen(false);
+                  }}
+                  className="w-12 h-12 bg-white dark:bg-zinc-900 text-purple-600 dark:text-purple-400 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-xl hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  title="Search & Filter"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Main FAB Toggle Button */}
+        <button
+          onClick={() => setQuickToolsOpen(!quickToolsOpen)}
+          className={`flex items-center gap-2 px-5 py-4 bg-purple-600 text-white rounded-full shadow-2xl shadow-purple-600/40 hover:scale-105 active:scale-95 transition-all outline-none focus:ring-4 focus:ring-purple-500/40 cursor-pointer font-bold text-sm font-display ${
+            quickToolsOpen ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 ring-2 ring-purple-500' : ''
+          }`}
+          title="Quick Tools Menu"
+        >
+          <Wrench className={`w-5 h-5 transition-transform duration-300 ${quickToolsOpen ? 'rotate-90' : ''}`} />
+          <span>Quick Tools</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,14 @@
 # Changelog
 
-All notable changes to the FairShare application will be documented in this file.
+All notable changes to the Budgeted application will be documented in this file.
+
+## [1.3.0] - Dashboard Widgets, Global Search & Quick Tools
+
+### Added
+- **Recent Activity Widget**: Displays the 5 most recent transactions added across all user groups with group badge, category indicator, and direct edit/delete capabilities.
+- **Global Search Engine**: Expanded the main content search bar to filter both groups AND individual expenses by description, category, paid-by user, group name, or amount.
+- **Recharts Spending Distribution Pie Chart**: Integrated a category breakdown pie chart with interactive hover tooltips, category legends, and percentage values.
+- **Speed Dial FAB Quick Tools Button**: Upgraded the floating action button to an expandable Quick Tools menu providing quick access to Add Expense, Create Group, Export CSV, and Search & Filter.
 
 ## [1.2.0] - UI & Layout Redesign
 
