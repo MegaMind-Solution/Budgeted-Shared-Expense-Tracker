@@ -449,14 +449,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
           <button 
             onClick={handleExportCSV}
             disabled={allGroupsExpenses.length === 0}
-            className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-2xl text-sm font-bold hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+            className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-2xl text-sm font-bold hover:bg-zinc-50 dark:hover:bg-zinc-800/50 hover:shadow-md transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm font-display"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Export CSV
           </button>
           <button 
             onClick={() => (window as any).openCreateGroupModal?.()}
-            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/40 transition-all shadow-lg shadow-indigo-500/20 active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-2xl text-sm font-bold hover:bg-purple-700 hover:shadow-xl hover:shadow-purple-600/30 transition-all shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
           >
             <Plus className="w-4 h-4" />
             Create New Group
@@ -472,7 +472,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
           placeholder="Search groups by name or type (e.g. personal, household, trip)..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm dark:text-white font-medium shadow-sm outline-none"
+          className="w-full pl-12 pr-10 py-3.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm dark:text-white font-medium shadow-sm outline-none"
         />
         {searchQuery && (
           <button 
@@ -499,7 +499,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 <button
                   key={group.id}
                   onClick={() => onSelectGroup(group.id)}
-                  className="text-left bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500 dark:hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/5 transition-all group flex flex-col justify-between h-44 cursor-pointer relative overflow-hidden"
+                  className="text-left bg-white dark:bg-zinc-900 p-6 rounded-[28px] border border-zinc-200 dark:border-zinc-800 hover:border-purple-500 dark:hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/5 transition-all group flex flex-col justify-between h-44 cursor-pointer relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-zinc-50 dark:bg-zinc-800/20 rounded-full -mr-12 -mt-12 group-hover:scale-110 transition-transform animate-pulse" />
                   <div className="relative z-10 w-full">
@@ -507,14 +507,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                       <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border ${
                         group.type === 'personal' ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' :
                         group.type === 'household' ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' :
-                        group.type === 'trip' ? 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20' :
-                        'bg-zinc-50 text-zinc-600 border-zinc-100 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-500/20'
+                        group.type === 'trip' ? 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20' :
+                        'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20'
                       }`}>
                         {group.type}
                       </span>
                       <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1.5 transition-transform" />
                     </div>
-                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-1 mb-1 font-display">{group.name}</h3>
+                    <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors line-clamp-1 mb-1 font-display">{group.name}</h3>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">{group.description || 'No description provided.'}</p>
                   </div>
                   {group.maxBudget && (
@@ -539,14 +539,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
               setIsGroupsListOpen(true);
             }
           }}
-          className={`text-left bg-indigo-600 p-8 rounded-[32px] shadow-lg shadow-indigo-500/40 relative overflow-hidden group transition-all ${groups.length > 0 ? 'hover:scale-[1.02] active:scale-95 cursor-pointer' : 'cursor-default'}`}
+          className={`text-left bg-purple-600 p-8 rounded-[32px] shadow-lg shadow-purple-600/30 relative overflow-hidden group transition-all ${groups.length > 0 ? 'hover:scale-[1.02] active:scale-95 cursor-pointer' : 'cursor-default'}`}
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative z-10">
             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6">
               <Users className="w-6 h-6 text-white" />
             </div>
-            <p className="text-xs font-bold text-indigo-100 uppercase tracking-[0.2em] mb-1">Active Groups</p>
+            <p className="text-xs font-bold text-purple-100 uppercase tracking-[0.2em] mb-1 font-display">Active Groups</p>
             <p className="text-4xl font-bold text-white font-display tracking-tight">{groups.length}</p>
           </div>
         </button>
@@ -556,14 +556,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
             if (recentExpenses.length === 0) return;
             onSelectGroup(recentExpenses[0].groupId);
           }}
-          className={`text-left bg-emerald-600 p-8 rounded-[32px] shadow-lg shadow-emerald-500/40 relative overflow-hidden group transition-all ${recentExpenses.length > 0 ? 'hover:scale-[1.02] active:scale-95 cursor-pointer' : 'cursor-default'}`}
+          className={`text-left bg-emerald-600 p-8 rounded-[32px] shadow-lg shadow-emerald-500/30 relative overflow-hidden group transition-all ${recentExpenses.length > 0 ? 'hover:scale-[1.02] active:scale-95 cursor-pointer' : 'cursor-default'}`}
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative z-10">
             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6">
               <Receipt className="w-6 h-6 text-white" />
             </div>
-            <p className="text-xs font-bold text-emerald-100 uppercase tracking-[0.2em] mb-1">Recent Expenses</p>
+            <p className="text-xs font-bold text-emerald-100 uppercase tracking-[0.2em] mb-1 font-display">Recent Expenses</p>
             <p className="text-4xl font-bold text-white font-display tracking-tight">{recentExpenses.length}</p>
           </div>
         </button>
@@ -573,14 +573,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
             if (alerts.length === 0) return;
             onSelectGroup(alerts[0].groupId);
           }}
-          className={`text-left bg-fuchsia-600 p-8 rounded-[32px] shadow-lg shadow-fuchsia-500/40 relative overflow-hidden group transition-all ${alerts.length > 0 ? 'hover:scale-[1.02] active:scale-95 cursor-pointer' : 'cursor-default'}`}
+          className={`text-left bg-amber-600 p-8 rounded-[32px] shadow-lg shadow-amber-500/30 relative overflow-hidden group transition-all ${alerts.length > 0 ? 'hover:scale-[1.02] active:scale-95 cursor-pointer' : 'cursor-default'}`}
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative z-10">
             <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6">
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
-            <p className="text-xs font-bold text-fuchsia-100 uppercase tracking-[0.2em] mb-1">Active Alerts</p>
+            <p className="text-xs font-bold text-amber-100 uppercase tracking-[0.2em] mb-1 font-display">Active Alerts</p>
             <p className="text-4xl font-bold text-white font-display tracking-tight">{alerts.length}</p>
           </div>
         </button>
@@ -617,10 +617,10 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                       onSelectGroup(group.id);
                       setIsGroupsListOpen(false);
                     }}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-50 dark:bg-white/5 hover:bg-zinc-100 dark:hover:bg-white/10 border border-zinc-100 dark:border-white/5 transition-all text-left group"
+                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/50 transition-all text-left group cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${group.type === 'personal' ? 'bg-blue-400' : group.type === 'household' ? 'bg-emerald-400' : 'bg-orange-400'}`} />
+                      <div className={`w-2 h-2 rounded-full ${group.type === 'personal' ? 'bg-blue-400' : group.type === 'household' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
                       <span className="font-bold text-zinc-900 dark:text-white">{group.name}</span>
                     </div>
                     <ArrowRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500 group-hover:translate-x-1 transition-transform" />
@@ -636,17 +636,17 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-12">
           {/* Monthly Summary Card */}
-          <section className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20">
+          <section className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   Monthly Summary
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">Spending trends over the last 6 months across your active groups</p>
               </div>
               <div className="text-right shrink-0">
-                <span className="text-2xl font-bold font-mono tracking-tight text-indigo-600 dark:text-indigo-400">
+                <span className="text-2xl font-bold font-mono tracking-tight text-purple-600 dark:text-purple-400">
                   ${formatCurrency(allGroupsExpenses.reduce((sum, e) => {
                     const expDate = e.date.toDate();
                     const now = new Date();
@@ -654,7 +654,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                     return expDate >= sixMonthsAgo ? sum + e.amount : sum;
                   }, 0))}
                 </span>
-                <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">6-Month Total</p>
+                <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-display">6-Month Total</p>
               </div>
             </div>
 
@@ -689,7 +689,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                           if (total === 0) return null;
                           return (
                             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-2xl shadow-xl backdrop-blur-md z-50">
-                              <p className="font-bold text-zinc-900 dark:text-white mb-2 text-xs">{label}</p>
+                              <p className="font-bold text-zinc-900 dark:text-white mb-2 text-xs font-display">{label}</p>
                               <div className="space-y-1.5 max-h-[160px] overflow-y-auto custom-scrollbar">
                                 {payload.map((entry: any, index: number) => {
                                   if (!entry.value) return null;
@@ -704,7 +704,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                               </div>
                               <div className="border-t border-zinc-100 dark:border-zinc-800 mt-2 pt-2 flex items-center justify-between">
                                 <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300">Total:</span>
-                                <span className="font-mono font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                                <span className="font-mono font-bold text-xs text-purple-600 dark:text-purple-400">
                                   ${total.toFixed(2)}
                                 </span>
                               </div>
@@ -722,7 +722,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                       wrapperStyle={{ fontSize: 10, fontWeight: 500, paddingBottom: 10 }}
                     />
                     {groups.map((group, index) => {
-                      const CHART_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e'];
+                      const CHART_COLORS = ['#9333ea', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#14b8a6', '#a855f7', '#8b5cf6'];
                       return (
                         <Bar 
                           key={group.id} 
@@ -743,7 +743,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Recent Activity</h2>
             </div>
-            <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20 overflow-hidden">
+            <div className="bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 overflow-hidden">
               {recentExpenses.length === 0 ? (
                 <div className="p-16 text-center">
                   <div className="w-16 h-16 bg-zinc-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -756,13 +756,13 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                   {recentExpenses.map(expense => (
                     <div key={expense.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between transition-all group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 gap-4">
                       <div className="flex items-center gap-4 min-w-0">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 dark:text-zinc-500 transition-all border border-zinc-100 dark:border-transparent shrink-0">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 transition-all border border-purple-100 dark:border-purple-500/20 shrink-0">
                           <Receipt className="w-6 h-6 sm:w-7 sm:h-7" />
                         </div>
                         <div className="min-w-0">
                           <p className="font-bold text-zinc-900 dark:text-white text-base sm:text-lg truncate">{expense.description}</p>
                           <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
-                            <span className="text-[9px] sm:text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-1 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg border border-indigo-100 dark:border-indigo-500/20">{expense.category}</span>
+                            <span className="text-[9px] sm:text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-1 bg-purple-50 dark:bg-purple-500/10 rounded-lg border border-purple-100 dark:border-purple-500/20">{expense.category}</span>
                             <span className="text-[9px] sm:text-[10px] text-zinc-500 font-mono font-bold">
                               {expense.date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </span>
@@ -788,14 +788,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                           <div className="flex items-center gap-1">
                             <button 
                               onClick={() => setEditingExpense(expense)}
-                              className="p-2 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl lg:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-indigo-50 dark:focus:bg-indigo-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-indigo-500"
+                              className="p-2 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl lg:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-purple-50 dark:focus:bg-purple-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                               title="Edit Expense"
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => setExpenseToDelete(expense)}
-                              className="p-2 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl lg:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-red-50 dark:focus:bg-red-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-red-500"
+                              className="p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl lg:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-rose-50 dark:focus:bg-rose-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-rose-500 cursor-pointer"
                               title="Delete Expense"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -818,7 +818,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
             </div>
             <div className="space-y-4">
               {alerts.length === 0 ? (
-                <div className="p-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] text-center shadow-xl shadow-zinc-200/50 dark:shadow-black/20">
+                <div className="p-10 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-[32px] text-center shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
                   <div className="w-12 h-12 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
                     <TrendingDown className="w-6 h-6 text-emerald-500" />
                   </div>
@@ -832,15 +832,15 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                     animate={{ opacity: 1, x: 0 }}
                     className={`p-6 rounded-[32px] border shadow-md transition-all duration-300 ${
                       alert.type === 'warning' 
-                        ? 'bg-red-50 dark:bg-red-950/80 border-red-200 dark:border-red-900/50 text-red-900 dark:text-red-100 backdrop-blur-sm' 
-                        : 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+                        ? 'bg-rose-50 dark:bg-rose-950/80 border-rose-200 dark:border-rose-900/50 text-rose-900 dark:text-rose-100 backdrop-blur-sm' 
+                        : 'bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/20'
                     }`}
                   >
                     <div className="flex gap-4">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                        alert.type === 'warning' ? 'bg-red-500/10 dark:bg-red-500/20' : 'bg-white/20'
+                        alert.type === 'warning' ? 'bg-rose-500/10 dark:bg-rose-500/20' : 'bg-white/20'
                       }`}>
-                        <TrendingUp className={`w-5 h-5 ${alert.type === 'warning' ? 'text-red-600 dark:text-red-400' : 'text-white'}`} />
+                        <TrendingUp className={`w-5 h-5 ${alert.type === 'warning' ? 'text-rose-600 dark:text-rose-400' : 'text-white'}`} />
                       </div>
                       <p className="text-sm font-bold leading-relaxed">{alert.message}</p>
                     </div>
@@ -872,14 +872,14 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 outline-none"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-2xl p-8 sm:p-10 outline-none z-10"
               tabIndex={-1}
             >
               <div className="flex items-center justify-between mb-8">
                 <h3 id="edit-expense-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Edit Expense</h3>
                 <button 
                   onClick={() => setEditingExpense(null)} 
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5 text-zinc-500" />
@@ -888,7 +888,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
               
               <form onSubmit={handleUpdateExpense} className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Amount</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Amount</label>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
                     <input
@@ -896,30 +896,30 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                       step="0.01"
                       value={editAmount}
                       onChange={(e) => setEditAmount(e.target.value)}
-                      className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-mono font-bold dark:text-white"
+                      className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-mono font-bold text-zinc-900 dark:text-white"
                       required
                       autoFocus
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Description</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Description</label>
                   <input
                     type="text"
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
-                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                     placeholder="What was this for?"
                     required
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Category</label>
+                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Category</label>
                     <select
                       value={editCategory}
                       onChange={(e) => setEditCategory(e.target.value)}
-                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium appearance-none dark:text-white"
+                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium appearance-none text-zinc-900 dark:text-white"
                     >
                       {CATEGORIES.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -927,12 +927,12 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Date</label>
+                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Date</label>
                     <input
                       type="date"
                       value={editDate}
                       onChange={(e) => setEditDate(e.target.value)}
-                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                       required
                     />
                   </div>
@@ -940,7 +940,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-indigo-500/20 active:scale-95"
+                  className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save Changes'}
                 </button>
@@ -968,26 +968,26 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 text-center outline-none"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 text-center outline-none z-10"
             >
-              <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-8 text-red-600 border border-red-100 dark:border-red-500/20">
-                <Trash2 className="w-10 h-10" />
+              <div className="w-16 h-16 bg-rose-50 dark:bg-rose-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-600 border border-rose-200 dark:border-rose-500/20">
+                <Trash2 className="w-8 h-8" />
               </div>
-              <h3 id="delete-expense-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4 font-display">Delete Expense?</h3>
-              <p id="delete-expense-desc" className="text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed">
+              <h3 id="delete-expense-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3 font-display">Delete Expense?</h3>
+              <p id="delete-expense-desc" className="text-zinc-500 dark:text-zinc-400 mb-8 leading-relaxed text-sm">
                 Are you sure you want to delete this expense? This action cannot be undone.
               </p>
               <div className="flex gap-4">
                 <button
                   onClick={() => setExpenseToDelete(null)}
-                  className="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-2xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95"
+                  className="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white rounded-2xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteExpense}
                   disabled={isDeleting}
-                  className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-red-500/20 active:scale-95"
+                  className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-bold hover:bg-rose-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-rose-500/20 active:scale-95 cursor-pointer"
                 >
                   {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Delete'}
                 </button>
@@ -1012,19 +1012,19 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 outline-none z-10"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 outline-none z-10"
               tabIndex={-1}
             >
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                  <div className="w-10 h-10 bg-purple-50 dark:bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20">
                     <Plus className="w-5 h-5" />
                   </div>
                   <h3 id="quick-add-expense-title" className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Quick Add Expense</h3>
                 </div>
                 <button 
                   onClick={() => setQuickAddOpen(false)} 
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5 text-zinc-500" />
@@ -1033,11 +1033,11 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
               
               <form onSubmit={handleQuickAddExpense} className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Select Group</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Select Group</label>
                   <select
                     value={quickGroupId}
                     onChange={(e) => setQuickGroupId(e.target.value)}
-                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium appearance-none dark:text-white"
+                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium appearance-none text-zinc-900 dark:text-white"
                     required
                   >
                     {groups.map(g => (
@@ -1047,7 +1047,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Amount</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Amount</label>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
                     <input
@@ -1055,7 +1055,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                       step="0.01"
                       value={quickAmount}
                       onChange={(e) => setQuickAmount(e.target.value)}
-                      className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-mono font-bold dark:text-white"
+                      className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-mono font-bold text-zinc-900 dark:text-white"
                       placeholder="0.00"
                       required
                       autoFocus
@@ -1064,12 +1064,12 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Description</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Description</label>
                   <input
                     type="text"
                     value={quickDescription}
                     onChange={(e) => setQuickDescription(e.target.value)}
-                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                     placeholder="What was this for?"
                     required
                   />
@@ -1077,11 +1077,11 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Category</label>
+                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Category</label>
                     <select
                       value={quickCategory}
                       onChange={(e) => setQuickCategory(e.target.value)}
-                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium appearance-none dark:text-white"
+                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium appearance-none text-zinc-900 dark:text-white"
                     >
                       {CATEGORIES.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -1089,12 +1089,12 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Date</label>
+                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Date</label>
                     <input
                       type="date"
                       value={quickDate}
                       onChange={(e) => setQuickDate(e.target.value)}
-                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                       required
                     />
                   </div>
@@ -1103,7 +1103,7 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-indigo-500/20 active:scale-95 cursor-pointer"
+                  className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Log Expense'}
                 </button>
@@ -1118,11 +1118,11 @@ export default function Dashboard({ user, groups, onSelectGroup, theme }: Dashbo
         <div className="fixed bottom-8 right-8 z-[50]">
           <button
             onClick={() => setQuickAddOpen(true)}
-            className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-600 to-violet-600 text-white rounded-full shadow-2xl shadow-indigo-500/40 hover:scale-110 active:scale-95 transition-all group relative outline-none focus:ring-4 focus:ring-indigo-500/40 cursor-pointer"
+            className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-full shadow-2xl shadow-purple-600/40 hover:scale-110 active:scale-95 transition-all group relative outline-none focus:ring-4 focus:ring-purple-500/40 cursor-pointer"
             title="Quick Add Expense"
           >
             <Plus className="w-7 h-7 transition-transform group-hover:rotate-90 duration-300" />
-            <span className="absolute right-16 bg-zinc-950 text-white text-xs font-bold py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-zinc-800">
+            <span className="absolute right-16 bg-zinc-900 text-white text-xs font-bold py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl border border-zinc-800">
               Quick Add Expense
             </span>
           </button>

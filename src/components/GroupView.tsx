@@ -506,7 +506,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
           {user.uid === group.createdBy && (
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="w-12 sm:w-auto p-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all shadow-sm flex items-center justify-center shrink-0"
+              className="w-12 sm:w-auto p-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white transition-all shadow-sm flex items-center justify-center shrink-0 cursor-pointer"
               title="Group Settings"
             >
               <MoreVertical className="w-5 h-5" />
@@ -514,18 +514,18 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
           )}
           <button 
             onClick={() => setIsAddMemberOpen(true)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-lg hover:shadow-indigo-500/10 transition-all active:scale-95 cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:border-purple-200 dark:hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/5 transition-all active:scale-95 cursor-pointer font-display"
           >
-            <UserPlus className="w-4 h-4" />
+            <UserPlus className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Invite
           </button>
           <button 
             onClick={handleExportCSV}
             disabled={expenses.length === 0}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-lg hover:shadow-indigo-500/10 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-5 py-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-sm font-bold text-zinc-700 dark:text-zinc-300 hover:bg-purple-50 dark:hover:bg-purple-500/10 hover:border-purple-200 dark:hover:border-purple-500/20 hover:shadow-lg hover:shadow-purple-500/5 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-display"
             title="Export group expenses as a CSV file"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Export CSV
           </button>
           <button 
@@ -533,7 +533,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               setEditingExpense(null);
               setIsAddExpenseOpen(true);
             }}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-2xl text-sm font-bold text-zinc-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:border-indigo-200 dark:hover:border-indigo-800 hover:shadow-lg hover:shadow-indigo-500/10 transition-all active:scale-95"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-2xl text-sm font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
           >
             <Plus className="w-4 h-4" />
             Add Expense
@@ -544,7 +544,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-4 lg:gap-6 mb-12">
         <button 
           onClick={() => setSelectedStatDetails({ title: 'Total Group Spend', amount: totalSpent })}
-          className="text-left w-full bg-white dark:bg-zinc-900 p-6 md:p-5 lg:p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-zinc-950/20 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+          className="text-left w-full bg-white dark:bg-zinc-900 p-6 md:p-5 lg:p-8 rounded-[32px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-zinc-100 dark:bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative">
@@ -559,13 +559,13 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               <div className="mt-6">
                 <div className="flex justify-between text-[10px] font-bold uppercase mb-2 font-display">
                   <span className="text-zinc-500">Budget ({group.budgetType})</span>
-                  <span className={currentBudgetSpent > group.maxBudget ? 'text-red-600 dark:text-red-400' : 'text-indigo-600 dark:text-indigo-400'}>
+                  <span className={currentBudgetSpent > group.maxBudget ? 'text-rose-600 dark:text-rose-400' : 'text-purple-600 dark:text-purple-400'}>
                     {((currentBudgetSpent / group.maxBudget) * 100).toFixed(0)}%
                   </span>
                 </div>
-                <div className="h-2 bg-zinc-100 dark:bg-white/10 rounded-full overflow-hidden">
+                <div className="h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div 
-                    className={`h-full transition-all duration-700 ease-out ${currentBudgetSpent > group.maxBudget ? 'bg-red-500' : 'bg-indigo-500'}`}
+                    className={`h-full transition-all duration-700 ease-out ${currentBudgetSpent > group.maxBudget ? 'bg-rose-500' : 'bg-purple-600'}`}
                     style={{ width: `${Math.min(100, (currentBudgetSpent / group.maxBudget) * 100)}%` }}
                   />
                 </div>
@@ -578,7 +578,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
         </button>
         <button 
           onClick={() => setSelectedStatDetails({ title: 'Your Share', amount: perPerson, subtitle: `${totalSpent > 0 ? ((userSpent / totalSpent) * 100).toFixed(0) : 0}% of total paid by you` })}
-          className="text-left w-full bg-white dark:bg-zinc-900 p-6 md:p-5 lg:p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+          className="text-left w-full bg-white dark:bg-zinc-900 p-6 md:p-5 lg:p-8 rounded-[32px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
         >
           <div className="absolute top-0 right-0 w-32 h-32 bg-zinc-100 dark:bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
           <div className="relative">
@@ -596,15 +596,15 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
         </button>
         <button 
           onClick={() => setSelectedStatDetails({ title: balance >= 0 ? 'You are owed' : 'You owe', amount: Math.abs(balance) })}
-          className="text-left w-full bg-white dark:bg-zinc-900 p-6 md:p-5 lg:p-8 rounded-[32px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer"
+          className="text-left w-full bg-white dark:bg-zinc-900 p-6 md:p-5 lg:p-8 rounded-[32px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 relative overflow-hidden group hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer"
         >
-          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 ${balance >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}`} />
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 ${balance >= 0 ? 'bg-emerald-500/10' : 'bg-rose-500/10'}`} />
           <div className="relative">
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-zinc-500 font-display">
               {balance >= 0 ? 'You are owed' : 'You owe'}
             </p>
             <p 
-              className={`text-4xl md:text-2xl lg:text-3xl xl:text-4xl font-bold font-display tracking-tight truncate ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}
+              className={`text-4xl md:text-2xl lg:text-3xl xl:text-4xl font-bold font-display tracking-tight truncate ${balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
               title={`$${formatCurrency(Math.abs(balance))}`}
             >
               ${formatCurrency(Math.abs(balance))}
@@ -615,15 +615,15 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {group.budgetType !== 'total' && (
-          <div className="bg-white dark:bg-zinc-900 p-4 sm:p-8 rounded-[40px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20">
-            <h3 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.15em] mb-8 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
+          <div className="bg-white dark:bg-zinc-900 p-4 sm:p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
+            <h3 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.15em] mb-8 flex items-center gap-2 font-display">
+              <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               Spending Trend ({group.budgetType})
             </h3>
             <div className="h-[280px] w-full">
               <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                 <LineChart data={lineData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f4f4f5" opacity={0.1} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme === 'dark' ? '#27272a' : '#f4f4f5'} />
                   <XAxis 
                     dataKey="name" 
                     axisLine={false} 
@@ -641,7 +641,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                   <Tooltip 
                     contentStyle={{ 
                       borderRadius: '16px', 
-                      border: 'none', 
+                      border: '1px solid ' + (theme === 'dark' ? '#27272a' : '#e4e4e7'), 
                       boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', 
                       padding: '12px', 
                       backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
@@ -654,19 +654,19 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                   <Line 
                     type="monotone" 
                     dataKey="amount" 
-                    stroke="#4f46e5" 
+                    stroke="#9333ea" 
                     strokeWidth={4} 
                     dot={{ r: 0 }}
-                    activeDot={{ r: 6, fill: '#4f46e5', strokeWidth: 3, stroke: '#fff' }}
+                    activeDot={{ r: 6, fill: '#9333ea', strokeWidth: 3, stroke: '#fff' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         )}
-        <div className={`bg-white dark:bg-zinc-900 p-4 sm:p-8 rounded-[40px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20 ${group.budgetType === 'total' ? 'lg:col-span-2' : ''}`}>
-          <h3 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.15em] mb-8 flex items-center gap-2">
-            <PieChartIcon className="w-4 h-4" />
+        <div className={`bg-white dark:bg-zinc-900 p-4 sm:p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20 ${group.budgetType === 'total' ? 'lg:col-span-2' : ''}`}>
+          <h3 className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.15em] mb-8 flex items-center gap-2 font-display">
+            <PieChartIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             Category Distribution
           </h3>
           <div className="h-[280px] w-full">
@@ -682,15 +682,16 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                     paddingAngle={8}
                     dataKey="value"
                   >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} strokeWidth={0} />
-                    ))}
+                    {pieData.map((entry, index) => {
+                      const CAT_COLORS = ['#9333ea', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6', '#a855f7', '#71717a'];
+                      return <Cell key={`cell-${index}`} fill={CAT_COLORS[index % CAT_COLORS.length]} strokeWidth={0} />;
+                    })}
                   </Pie>
                   <Tooltip 
                     formatter={(value: number) => [`$${formatCurrency(value)}`, 'Total']}
                     contentStyle={{ 
                       borderRadius: '16px', 
-                      border: 'none', 
+                      border: '1px solid ' + (theme === 'dark' ? '#27272a' : '#e4e4e7'), 
                       boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', 
                       padding: '12px', 
                       backgroundColor: theme === 'dark' ? '#18181b' : '#ffffff', 
@@ -715,19 +716,19 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white flex items-center gap-3 font-display">
-              <Receipt className="w-6 h-6 text-zinc-400 dark:text-zinc-500" />
+              <Receipt className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               Transaction History
             </h2>
-            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest">{expenses.length} Total</div>
+            <div className="text-xs font-bold text-zinc-500 uppercase tracking-widest font-display">{expenses.length} Total</div>
           </div>
           
-          <div className="bg-white dark:bg-zinc-900 rounded-[40px] border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-xl shadow-zinc-200/50 dark:shadow-black/20">
+          <div className="bg-white dark:bg-zinc-900 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 overflow-hidden shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
             {expenses.length === 0 ? (
               <div className="p-10 sm:p-20 text-center">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Receipt className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-300 dark:text-zinc-600" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-purple-50 dark:bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20">
+                  <Receipt className="w-8 h-8 sm:w-10 sm:h-10" />
                 </div>
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2">No transactions yet</h3>
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-white mb-2 font-display">No transactions yet</h3>
                 <p className="text-zinc-500 dark:text-zinc-400 max-w-xs mx-auto text-sm">Start tracking your shared expenses by adding your first transaction.</p>
               </div>
             ) : (
@@ -735,14 +736,14 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                 {expenses.map(expense => (
                   <div key={expense.id} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between group transition-all duration-200 gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                     <div className="flex items-center gap-4 sm:gap-5 min-w-0">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-700 group-hover:bg-white dark:group-hover:bg-zinc-800 transition-colors shrink-0">
-                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-tighter text-zinc-500">{expense.date.toDate().toLocaleDateString('en-US', { month: 'short' })}</span>
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex flex-col items-center justify-center text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 transition-colors shrink-0">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-tighter text-purple-600 dark:text-purple-400">{expense.date.toDate().toLocaleDateString('en-US', { month: 'short' })}</span>
                         <span className="text-lg sm:text-xl font-bold leading-none text-zinc-900 dark:text-white">{expense.date.toDate().getDate()}</span>
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">{expense.description}</p>
+                        <p className="font-bold text-zinc-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors truncate">{expense.description}</p>
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-full text-[9px] sm:text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider border border-zinc-200 dark:border-zinc-700 shrink-0">{expense.category}</span>
+                          <span className="px-2 py-0.5 bg-purple-50 dark:bg-purple-500/10 rounded-full text-[9px] sm:text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider border border-purple-100 dark:border-purple-500/20 shrink-0">{expense.category}</span>
                           <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline shrink-0">•</span>
                           <span className="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-medium truncate">Paid by {members.find(m => m.uid === expense.paidBy)?.displayName || 'Unknown'}</span>
                         </div>
@@ -756,19 +757,19 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                         >
                           ${formatCurrency(expense.amount)}
                         </p>
-                        <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Amount</p>
+                        <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-widest font-display">Amount</p>
                       </div>
                       <div className="flex items-center gap-1">
                         <button 
                           onClick={() => setEditingExpense(expense)}
-                          className="p-2 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl sm:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-indigo-50 dark:focus:bg-indigo-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="p-2 text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-500/10 rounded-xl sm:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-purple-50 dark:focus:bg-purple-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                           title="Edit Expense"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => setExpenseToDelete(expense.id)}
-                          className="p-2 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl sm:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-red-50 dark:focus:bg-red-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-red-500"
+                          className="p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl sm:opacity-0 group-hover:opacity-100 focus:opacity-100 focus:bg-rose-50 dark:focus:bg-rose-500/10 transition-all active:scale-90 outline-none focus:ring-2 focus:ring-rose-500 cursor-pointer"
                           title="Delete Expense"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -784,31 +785,31 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
 
         <div>
           <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white mb-8 flex items-center gap-3 font-display">
-            <Users className="w-6 h-6 text-zinc-400 dark:text-zinc-500" />
+            <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             Group Members
           </h2>
-          <div className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-black/20">
+          <div className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] border border-zinc-200/80 dark:border-zinc-800 shadow-xl shadow-zinc-200/40 dark:shadow-black/20">
             <div className="space-y-6">
               {members.map(member => (
                 <div key={member.uid} className="flex items-center justify-between group">
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="relative shrink-0">
-                      <div className="w-12 h-12 bg-zinc-50 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-400 dark:text-zinc-500 font-bold border border-zinc-100 dark:border-zinc-700 group-hover:border-indigo-500 transition-colors">
+                      <div className="w-12 h-12 bg-purple-50 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold border border-purple-100 dark:border-purple-500/20 group-hover:border-purple-500 transition-colors">
                         {member.displayName?.charAt(0)}
                       </div>
                       {member.uid === group.createdBy && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-600 rounded-full border-2 border-white dark:border-zinc-900 flex items-center justify-center">
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 rounded-full border-2 border-white dark:border-zinc-900 flex items-center justify-center">
                           <Sparkles className="w-2 h-2 text-white" />
                         </div>
                       )}
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-zinc-900 dark:text-white truncate">{member.displayName}</p>
-                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest truncate">{member.role}</p>
+                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest truncate font-display">{member.role}</p>
                     </div>
                   </div>
                   {member.uid === group.createdBy && (
-                    <span className="shrink-0 text-[9px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-500/20 ml-2">OWNER</span>
+                    <span className="shrink-0 text-[9px] font-bold text-purple-600 bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-100 dark:border-purple-500/20 ml-2 font-display">OWNER</span>
                   )}
                 </div>
               ))}
@@ -829,7 +830,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                 setIsAddExpenseOpen(false);
                 setEditingExpense(null);
               }}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm"
             />
             <motion.div
               role="dialog"
@@ -838,7 +839,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-6 sm:p-10 outline-none"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-6 sm:p-10 outline-none z-10"
             >
               <div className="flex items-center justify-between mb-8">
                 <h3 id="add-expense-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">
@@ -850,7 +851,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                     setIsAddExpenseOpen(false);
                     setEditingExpense(null);
                   }} 
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5 text-zinc-500" />
@@ -858,7 +859,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               </div>
               <form onSubmit={handleAddExpense} className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Amount</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Amount</label>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
                     <input
@@ -866,7 +867,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                       step="0.01"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-mono font-bold text-lg dark:text-white"
+                      className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-mono font-bold text-lg text-zinc-900 dark:text-white"
                       placeholder="0.00"
                       required
                       autoFocus
@@ -874,40 +875,40 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Description</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Description</label>
                   <input
                     type="text"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                     placeholder="What was it for?"
                     required
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Category</label>
+                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Category</label>
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium appearance-none dark:text-white"
+                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium appearance-none text-zinc-900 dark:text-white"
                     >
                       {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Date</label>
+                    <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Date</label>
                     <input
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                      className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                     />
                   </div>
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-4 bg-zinc-900 dark:bg-indigo-600 text-white rounded-2xl font-bold hover:bg-zinc-800 dark:hover:bg-indigo-700 transition-all mt-4 shadow-lg shadow-zinc-200 dark:shadow-indigo-500/20 active:scale-95"
+                  className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-all mt-4 shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   {editingExpense ? 'Update Transaction' : 'Save Transaction'}
                 </button>
@@ -926,7 +927,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setIsAddMemberOpen(false)}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm"
             />
             <motion.div
               role="dialog"
@@ -935,14 +936,14 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 outline-none"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 outline-none z-10"
             >
               <div className="flex items-center justify-between mb-2">
                 <h3 id="add-member-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Invite Member</h3>
                 <button 
                   type="button"
                   onClick={() => setIsAddMemberOpen(false)} 
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5 text-zinc-500" />
@@ -951,7 +952,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-8">Enter the email address of the person you want to add.</p>
               
               {inviteError && (
-                <div className="mb-6 p-4 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold rounded-2xl">
+                <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs font-bold rounded-2xl">
                   {inviteError}
                 </div>
               )}
@@ -965,7 +966,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
 
               <form onSubmit={handleAddMember} className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Email Address</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Email Address</label>
                   <input
                     type="email"
                     value={newMemberEmail}
@@ -973,7 +974,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                       setNewMemberEmail(e.target.value);
                       setInviteError(null);
                     }}
-                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                    className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                     placeholder="friend@example.com"
                     required
                     disabled={inviteLoading || inviteSuccess}
@@ -983,7 +984,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                 <button
                   type="submit"
                   disabled={inviteLoading || inviteSuccess}
-                  className="w-full py-4 bg-zinc-900 dark:bg-indigo-600 text-white rounded-2xl font-bold hover:bg-zinc-800 dark:hover:bg-indigo-700 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-zinc-200 dark:shadow-indigo-500/20 active:scale-95"
+                  className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-all mt-4 flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   {inviteLoading ? (
                     <>
@@ -1009,7 +1010,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setIsSettingsOpen(false)}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm"
             />
             <motion.div
               role="dialog"
@@ -1018,14 +1019,14 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 max-h-[90vh] overflow-y-auto outline-none"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 max-h-[90vh] overflow-y-auto outline-none z-10"
             >
               <div className="flex items-center justify-between mb-8">
                 <h3 id="settings-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white font-display">Group Settings</h3>
                 <button 
                   type="button"
                   onClick={() => setIsSettingsOpen(false)} 
-                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   aria-label="Close modal"
                 >
                   <X className="w-5 h-5 text-zinc-500" />
@@ -1033,35 +1034,35 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               </div>
               <form onSubmit={handleUpdateSettings} className="space-y-8">
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-6">General Info</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-6 font-display">General Info</h4>
                   <div className="space-y-5">
                     <div>
-                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Group Name</label>
+                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Group Name</label>
                       <input
                         type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium dark:text-white"
+                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium text-zinc-900 dark:text-white"
                         required
                         autoFocus
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Description</label>
+                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Description</label>
                       <textarea
                         value={editDescription}
                         onChange={(e) => setEditDescription(e.target.value)}
-                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium resize-none h-24 dark:text-white"
+                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium resize-none h-24 text-zinc-900 dark:text-white"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-6">Budget Limits</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-6 font-display">Budget Limits</h4>
                   <div className="space-y-5">
                     <div>
-                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Max Budget</label>
+                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Max Budget</label>
                       <div className="relative">
                         <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 font-mono font-bold">$</span>
                         <input
@@ -1070,16 +1071,16 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                           value={editMaxBudget}
                           onChange={(e) => setEditMaxBudget(e.target.value)}
                           placeholder="No limit"
-                          className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-mono font-bold dark:text-white"
+                          className="w-full pl-10 pr-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-mono font-bold text-zinc-900 dark:text-white"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2">Frequency</label>
+                      <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.15em] mb-2 font-display">Frequency</label>
                       <select
                         value={editBudgetType}
                         onChange={(e) => setEditBudgetType(e.target.value as BudgetType)}
-                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium appearance-none dark:text-white"
+                        className="w-full px-5 py-4 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-500 transition-all font-medium appearance-none text-zinc-900 dark:text-white"
                       >
                         <option value="weekly">Per Week</option>
                         <option value="monthly">Per Month</option>
@@ -1090,7 +1091,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-4 bg-zinc-900 dark:bg-indigo-600 text-white rounded-2xl font-bold hover:bg-zinc-800 dark:hover:bg-indigo-700 transition-all shadow-lg shadow-zinc-200 dark:shadow-indigo-500/20 active:scale-95"
+                  className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   Save Settings
                 </button>
@@ -1103,7 +1104,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
                         setIsSettingsOpen(false);
                         setIsDeleteGroupConfirmOpen(true);
                       }}
-                      className="w-full py-4 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-2xl font-bold hover:bg-red-100 dark:hover:bg-red-500/20 transition-all flex items-center justify-center gap-2 active:scale-95"
+                      className="w-full py-4 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-2xl font-bold hover:bg-rose-100 dark:hover:bg-rose-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer font-display"
                     >
                       <Trash2 className="w-5 h-5" />
                       Delete Group
@@ -1125,7 +1126,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setIsDeleteGroupConfirmOpen(false)}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm"
             />
             <motion.div
               ref={deleteGroupModalRef}
@@ -1137,23 +1138,23 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 text-center outline-none"
+              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 text-center outline-none z-10"
             >
-              <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-8 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-500/20">
-                <Trash2 className="w-10 h-10" />
+              <div className="w-16 h-16 bg-rose-50 dark:bg-rose-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-600 border border-rose-200 dark:border-rose-500/20">
+                <Trash2 className="w-8 h-8" />
               </div>
               <h3 id="delete-group-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3 font-display">Delete Group?</h3>
-              <p id="delete-group-desc" className="text-zinc-500 dark:text-zinc-400 text-sm mb-10 leading-relaxed">This will permanently delete the group <strong>{group?.name}</strong> and all its expenses. This action cannot be undone.</p>
+              <p id="delete-group-desc" className="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">This will permanently delete the group <strong>{group?.name}</strong> and all its expenses. This action cannot be undone.</p>
               <div className="flex gap-4">
                 <button
                   onClick={() => setIsDeleteGroupConfirmOpen(false)}
-                  className="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95"
+                  className="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-2xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteGroup}
-                  className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200 dark:shadow-red-500/20 active:scale-95"
+                  className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   Delete
                 </button>
@@ -1172,7 +1173,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setSelectedStatDetails(null)}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm"
             />
             <motion.div
               ref={statModalRef}
@@ -1183,10 +1184,10 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 text-center outline-none"
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 text-center outline-none z-10"
             >
               <p id="stat-title" className="text-xs font-bold text-zinc-500 uppercase tracking-[0.2em] mb-4 font-display">{selectedStatDetails.title}</p>
-              <p className="text-5xl sm:text-6xl font-bold text-zinc-900 dark:text-white font-display tracking-tight mb-2 break-all">
+              <p className="text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-white font-display tracking-tight mb-2 break-all">
                 ${formatCurrency(selectedStatDetails.amount)}
               </p>
               {selectedStatDetails.subtitle && (
@@ -1196,7 +1197,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               )}
               <button
                 onClick={() => setSelectedStatDetails(null)}
-                className="w-full py-4 bg-zinc-900 dark:bg-indigo-600 text-white rounded-2xl font-bold hover:bg-zinc-800 dark:hover:bg-indigo-700 transition-all mt-8 shadow-lg shadow-zinc-200 dark:shadow-indigo-500/20 active:scale-95"
+                className="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-all mt-8 shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer font-display"
               >
                 Close
               </button>
@@ -1214,7 +1215,7 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setExpenseToDelete(null)}
-              className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm"
             />
             <motion.div
               ref={deleteExpenseModalRef}
@@ -1226,23 +1227,23 @@ export default function GroupView({ groupId, user, onBack, theme }: GroupViewPro
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-[40px] shadow-2xl p-10 text-center outline-none"
+              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[32px] shadow-2xl p-8 sm:p-10 text-center outline-none z-10"
             >
-              <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-8 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-500/20">
-                <Trash2 className="w-10 h-10" />
+              <div className="w-16 h-16 bg-rose-50 dark:bg-rose-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-600 border border-rose-200 dark:border-rose-500/20">
+                <Trash2 className="w-8 h-8" />
               </div>
               <h3 id="delete-expense-title" className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white mb-3 font-display">Delete Expense?</h3>
-              <p id="delete-expense-desc" className="text-zinc-500 dark:text-zinc-400 text-sm mb-10 leading-relaxed">This action cannot be undone. Are you sure you want to remove this expense?</p>
+              <p id="delete-expense-desc" className="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">This action cannot be undone. Are you sure you want to remove this expense?</p>
               <div className="flex gap-4">
                 <button
                   onClick={() => setExpenseToDelete(null)}
-                  className="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-2xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95"
+                  className="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-2xl font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDeleteExpense(expenseToDelete)}
-                  className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200 dark:shadow-red-500/20 active:scale-95"
+                  className="flex-1 py-4 bg-rose-600 text-white rounded-2xl font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 active:scale-95 cursor-pointer font-display"
                 >
                   Delete
                 </button>
